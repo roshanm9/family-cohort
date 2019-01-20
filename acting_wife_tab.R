@@ -48,14 +48,13 @@ survey %>%
             observations = n()) %>%
   gather(key = "variable")
 
-
 #-----------------------------------
 # Replicating Table 2 Col 1 and 2
 #-----------------------------------
 
 category_codebook <-
-  tibble(single = c(1,1,0,0),
-         female = c(1,0,1,0),
+  tibble(single = c(0,0,1,1),
+         female = c(0,1,0,1),
          category = c("Single Woman", "Single Man",
                       "Non-Single Woman", "Non-Single Man"))
 
@@ -64,8 +63,12 @@ survey %>%
   filter(!is.na(category)) %>%
   group_by(category) %>%
   summarise(Salary_Negotiation = mean(wage, na.rm = T),
-            Leadership_Role = mean(leadership, na.rm = T),
-            Presentati)
+           Leadership_Role = mean(leadership, na.rm = T),
+          Presentation = mean(presentation, na.rm = T),
+          Speaking_Up = mean(speaking, na.rm = T),
+            Any_Behavior = mean(any,na.rm = T))
+
+
 
 
 #-----------------------------------
