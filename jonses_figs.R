@@ -76,6 +76,10 @@ INFL_codebook <-
   tibble(year = c(2000, 1990, 1980),
          infl_mult = c(1, 1.3175, 2.0898))
 
+#city codebook
+CITY_codebook <-
+  tibble(pwmrst = c(6160,5600,4480,1920,1600))
+
 # Now we join on all of these codebooks and create a new row for real_inc
 clean_df <-
   clean_df %>%
@@ -142,15 +146,122 @@ fig_1a %>%
 #-----------------------------------
 # Now you get to replicate Figure 1b
 #-----------------------------------
-
+  fig_1b <-
+    clean_df %>%
+    filter(race == "Black",
+           hispan == F,
+           age < 35,
+           age >= 25,
+           sex == "Male") %>%
+    mutate(binned_real_inc = round(real_inc/2500)*2500) %>%
+    group_by(binned_real_inc, year, sex) %>%
+    summarise(prop_married = mean(marst == "Married", na.rm = T)) %>%
+    filter(binned_real_inc < 65000) %>%
+    filter(binned_real_inc > 2500)
+    
+  
+  fig_1b %>%
+    ggplot(aes(x = binned_real_inc, y = prop_married, color = as.factor(year))) +
+    geom_point() +
+    geom_line() +
+    theme_bw() +
+    theme(legend.position = "bottom") +
+    labs(x = "Real Income in 2000's dollars",
+         y = "Proportion Married",
+         color = "Year",
+         title = "Marriage Rates by Income for Nonhispanic Black Men")
 
 #-----------------------------------
 # Now you get to replicate Figure 1c
 #-----------------------------------
 
-
+  fig_1c <-
+    clean_df %>%
+    filter(hispan != F,
+           age < 35,
+           age >= 25,
+           sex == "Male") %>%
+    mutate(binned_real_inc = round(real_inc/2500)*2500) %>%
+    group_by(binned_real_inc, year, sex) %>%
+    summarise(prop_married = mean(marst == "Married", na.rm = T)) %>%
+    filter(binned_real_inc < 65000) %>%
+    filter(binned_real_inc > 2500)
+  
+ tthog<-
+   tbl_df(clean_df) %>%
+   filter(hispan != F,
+          age < 35,
+          age >= 25,
+          sex == "Male",
+          year == 2000) %>%
+   mutate(binned_real_inc = round(real_inc/2500)*2500)%>%
+   filter(binned_real_inc == 20000)%>%
+   print(n= Inf)
+  
+   
+  
+  fig_1c %>%
+    ggplot(aes(x = binned_real_inc, y = prop_married, color = as.factor(year))) +
+    geom_point() +
+    geom_line() +
+    theme_bw() +
+    theme(legend.position = "bottom") +
+    labs(x = "Real Income in 2000's dollars",
+         y = "Proportion Married",
+         color = "Year",
+         title = "Marriage Rates by Income for Hispanic Men")
 #-----------------------------------
 # Now you get to replicate Figure 2
 #-----------------------------------
-
+  clown <- function(num1)
+  {
+    char <- ""
+    if(num1==6160)
+    {
+      char<- "Philadelphia"
+    }
+    if(num1==5600)
+    {
+      char<- "New YOrk"
+    }
+    if(num1==4480)
+    {
+      char <- "LA"
+    }
+    if(num1==1920)
+    {
+      char <- "Dallas"
+    }
+    if(num1==1600)
+    {
+      char <- "Chicago"
+    }
+    return char
+  }
+  
+  fig_2 <-
+    clean_df %>%
+    filter(race == "White",
+           hispan == F,
+           age < 35,
+           age >= 25,
+           sex=="Male",
+           pwmetro %in% c(6160,5600,4480,1920,1600)) %>%
+    mutate(binned_real_inc = round(real_inc/5000)*5000) %>%
+    mutate(metro = as.character((pwmetro))) %>%
+    group_by(binned_real_inc, metro, year, sex) %>%
+    summarise(prop_married = mean(marst == "Married", na.rm = T)) %>%
+    filter(binned_real_inc < 75000)
+  
+  
+  fig_2 %>%
+    ggplot(aes(x = binned_real_inc, y = prop_married)) +
+    facet_wrap(~metro)+
+    geom_point() +
+    geom_line() +
+    theme_bw() +
+    theme(legend.position = "bottom") +
+    labs(x = "Real Income in 2000's dollars",
+         y = "Proportion Married",
+         title = "Marriage Rates by Income for Nonhispanic White Men")
 # This one will require some real work coding in the metro areas
